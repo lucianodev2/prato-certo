@@ -1,6 +1,7 @@
 node_modules/
 *.db
 .env
+.env.local
 dist/
 .DS_Store
 *.txt
