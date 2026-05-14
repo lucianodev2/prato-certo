@@ -232,9 +232,11 @@ export default function AIAnalysis() {
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs text-gray-500">
             <p className="font-semibold text-gray-600 mb-1">🎓 Nota técnica (acadêmica)</p>
             <p>
-              Motor: <strong>rule-based engine</strong> — analisa vetores de avaliações, aplica regras
-              sobre médias, taxas de desperdício e frequências para gerar insights. Arquitetura preparada
-              para integração com OpenAI ou Gemini API mediante configuração de chave no servidor.
+              Motor: <strong>{analysis.engine === 'rule-based' ? 'rule-based engine' : `Groq API — ${analysis.engine}`}</strong>
+              {analysis.engine === 'rule-based'
+                ? ' — analisa vetores de avaliações e aplica regras sobre médias, desperdício e frequências.'
+                : ' — o resumo foi gerado por IA (LLaMA 3.1) com base nos dados calculados pelo motor de regras.'}
+              {' '}Insights, alertas, tendências e sugestões sempre calculados pelo motor de regras local.
             </p>
           </div>
         </div>
