@@ -88,17 +88,16 @@ export default function Dashboard() {
 
       {/* Info vetores */}
       <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
-        <strong>Estrutura: Vetores (Arrays)</strong> — todas as estatísticas são calculadas iterando sobre vetores de avaliações.
-        A busca, inserção e média utilizam operações sobre esses vetores.
+        <strong>Estrutura: Vetores (Arrays)</strong> — todas as estatísticas são calculadas iterando sobre vetores de avaliações.        A busca, inserção e média utilizam operações sobre esses vetores.
       </div>
 
       {/* Overview */}
       {overview && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard label="Total de Avaliações" value={overview.totalEvaluations} icon="📊" color="green" />
-          <StatCard label="Nota Média"           value={`${overview.averageRating}★`} icon="⭐" color="blue" />
-          <StatCard label="Índice Desperdício"   value={`${overview.wastePercentage}%`} icon="🗑️" color="orange" />
-          <StatCard label="Refeições"            value={overview.totalMeals} icon="🥘" color="green" />
+          <StatCard label="Total de Avaliações" value={overview.totalEvaluations} color="green" />
+          <StatCard label="Nota Média"           value={`${overview.averageRating}★`} color="blue" />
+          <StatCard label="Índice Desperdício"   value={`${overview.wastePercentage}%`} color="orange" />
+          <StatCard label="Refeições"            value={overview.totalMeals} color="green" />
         </div>
       )}
 
@@ -154,7 +153,7 @@ export default function Dashboard() {
             {mealStats.map((m, i) => (
               <div key={m.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                 <span className={`font-bold text-lg w-8 text-center ${i === 0 ? 'text-yellow-500' : i === 1 ? 'text-gray-400' : i === 2 ? 'text-orange-400' : 'text-gray-300'}`}>
-                  {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}º`}
+                  {`${i + 1}º`}
                 </span>
                 <div className="flex-1">
                   <p className="font-semibold text-sm text-gray-800">{m.name}</p>
@@ -180,21 +179,18 @@ export default function Dashboard() {
 
       {/* ── PESQUISA DE CAMPO ── */}
       <div className="border-t-2 border-brand-100 pt-6">
-        <div className="flex items-center gap-3 mb-1">
-          <span className="text-2xl">📋</span>
-          <div>
-            <h2 className="text-xl font-extrabold text-brand-800">Pesquisa de Campo</h2>
-            <p className="text-xs text-gray-400">Escola Estadual · 193 alunos · 13/05/2026</p>
-          </div>
+        <div className="mb-1">
+          <h2 className="text-xl font-extrabold text-brand-800">Pesquisa de Campo</h2>
+          <p className="text-xs text-gray-400">Escola Estadual · 193 alunos · 13/05/2026</p>
         </div>
         <p className="text-sm text-gray-500 mb-6">Dados coletados diretamente com estudantes via questionário presencial.</p>
 
         {/* Cards resumo */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <StatCard label="Respondentes"    value={193}    icon="👥" color="green" sub="alunos entrevistados" />
-          <StatCard label="Comem Diariamente" value="66,1%" icon="🍽️" color="blue"  sub="todos os dias" />
-          <StatCard label="Percebem Desperdício" value="81,8%" icon="♻️" color="orange" sub="dizem que há desperdício" />
-          <StatCard label="Deram Sugestão"  value={156}    icon="💬" color="green" sub="de 193 respondentes" />
+          <StatCard label="Respondentes"       value={193}    color="green" sub="alunos entrevistados" />
+          <StatCard label="Comem Diariamente"   value="66,1%" color="blue"  sub="todos os dias" />
+          <StatCard label="Percebem Desperdício" value="81,8%" color="orange" sub="dizem que há desperdício" />
+          <StatCard label="Deram Sugestão"       value={156}   color="green" sub="de 193 respondentes" />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6 mb-6">

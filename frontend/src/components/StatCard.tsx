@@ -1,7 +1,6 @@
 interface StatCardProps {
   label: string
   value: string | number
-  icon: string
   color?: 'green' | 'blue' | 'orange' | 'red'
   sub?: string
 }
@@ -13,15 +12,12 @@ const colorMap = {
   red:    'bg-red-50    text-red-700    border-red-200',
 }
 
-export default function StatCard({ label, value, icon, color = 'green', sub }: StatCardProps) {
+export default function StatCard({ label, value, color = 'green', sub }: StatCardProps) {
   return (
-    <div className={`card flex items-center gap-4 border ${colorMap[color]}`}>
-      <div className="text-3xl">{icon}</div>
-      <div>
-        <p className="text-xs font-medium opacity-70 uppercase tracking-wide">{label}</p>
-        <p className="text-2xl font-bold">{value}</p>
-        {sub && <p className="text-xs opacity-60 mt-0.5">{sub}</p>}
-      </div>
+    <div className={`card border ${colorMap[color]}`}>
+      <p className="text-xs font-medium opacity-70 uppercase tracking-wide">{label}</p>
+      <p className="text-2xl font-bold">{value}</p>
+      {sub && <p className="text-xs opacity-60 mt-0.5">{sub}</p>}
     </div>
   )
 }

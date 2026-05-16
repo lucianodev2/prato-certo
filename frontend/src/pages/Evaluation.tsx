@@ -23,16 +23,16 @@ interface PendingFeedback {
 const visualQueue = new Queue<PendingFeedback>()
 
 export default function Evaluation() {
-  const [meals, setMeals]           = useState<Meal[]>([])
-  const [selected, setSelected]     = useState<Meal | null>(null)
-  const [rating, setRating]         = useState(0)
-  const [liked, setLiked]           = useState<boolean | null>(null)
-  const [hadWaste, setHadWaste]     = useState(false)
-  const [step, setStep]             = useState<Step>('form')
-  const [queueItems, setQueueItems] = useState<PendingFeedback[]>([])
-  const [loading, setLoading]       = useState(true)
+  const [meals, setMeals]               = useState<Meal[]>([])
+  const [selected, setSelected]         = useState<Meal | null>(null)
+  const [rating, setRating]             = useState(0)
+  const [liked, setLiked]               = useState<boolean | null>(null)
+  const [hadWaste, setHadWaste]         = useState(false)
+  const [step, setStep]                 = useState<Step>('form')
+  const [queueItems, setQueueItems]     = useState<PendingFeedback[]>([])
+  const [loading, setLoading]           = useState(true)
   const [pendingCount, setPendingCount] = useState(getPendingCount)
-  const [syncMsg, setSyncMsg]       = useState<string | null>(null)
+  const [syncMsg, setSyncMsg]           = useState<string | null>(null)
 
   useEffect(() => {
     mealsApi.getAll()
@@ -42,7 +42,6 @@ export default function Evaluation() {
 
     const unsub = onQueueChange(setPendingCount)
 
-    // Tenta sincronizar ao ficar online
     async function handleOnline() {
       const pending = getPendingCount()
       if (pending > 0) {
@@ -50,7 +49,7 @@ export default function Evaluation() {
           evaluationsApi.create({ ...data }).then(() => {})
         )
         if (result.synced > 0) {
-          setSyncMsg(`✅ ${result.synced} avaliação(ões) sincronizada(s) com sucesso!`)
+          setSyncMsg(`${result.synced} avaliação(ões) sincronizada(s) com sucesso.`)
           setTimeout(() => setSyncMsg(null), 4000)
         }
       }
@@ -77,7 +76,6 @@ export default function Evaluation() {
       had_waste: hadWaste,
     }
 
-    // Enfileira visualmente (demonstração da estrutura Fila)
     visualQueue.enqueue(feedback)
     setQueueItems(visualQueue.toArray())
     setStep('queuing')
@@ -87,13 +85,7 @@ export default function Evaluation() {
     await delay(800)
 
     if (!isOnline()) {
-      // Modo offline: salva no localStorage
-      enqueueOffline({
-        meal_id:   feedback.meal_id,
-        rating:    feedback.rating,
-        liked:     feedback.liked,
-        had_waste: feedback.had_waste,
-      })
+      enqueueOffline({ meal_id: feedback.meal_id, rating: feedback.rating, liked: feedback.liked, had_waste: feedback.had_waste })
       visualQueue.dequeue()
       setQueueItems(visualQueue.toArray())
       setStep('offline_saved')
@@ -101,23 +93,12 @@ export default function Evaluation() {
     }
 
     try {
-      await evaluationsApi.create({
-        meal_id:   feedback.meal_id,
-        rating:    feedback.rating,
-        liked:     feedback.liked,
-        had_waste: feedback.had_waste,
-      })
+      await evaluationsApi.create({ meal_id: feedback.meal_id, rating: feedback.rating, liked: feedback.liked, had_waste: feedback.had_waste })
       visualQueue.dequeue()
       setQueueItems(visualQueue.toArray())
       setStep('done')
     } catch {
-      // Falha de rede: salva offline
-      enqueueOffline({
-        meal_id:   feedback.meal_id,
-        rating:    feedback.rating,
-        liked:     feedback.liked,
-        had_waste: feedback.had_waste,
-      })
+      enqueueOffline({ meal_id: feedback.meal_id, rating: feedback.rating, liked: feedback.liked, had_waste: feedback.had_waste })
       visualQueue.dequeue()
       setQueueItems(visualQueue.toArray())
       setStep('offline_saved')
@@ -128,21 +109,20 @@ export default function Evaluation() {
     setSelected(null); setRating(0); setLiked(null); setHadWaste(false); setStep('form')
   }
 
-  // Estados intermediários
   if (step === 'queuing' || step === 'processing') {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
         <div className="card">
           {step === 'queuing' ? (
             <>
-              <div className="text-5xl mb-4 animate-bounce">📥</div>
-              <h2 className="text-xl font-bold text-brand-700 mb-2">Adicionando à Fila…</h2>
+              <div className="w-12 h-12 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-brand-700 mb-2">Adicionando à Fila...</h2>
               <p className="text-gray-500 text-sm mb-4">Seu feedback foi colocado na fila de processamento (enqueue).</p>
             </>
           ) : (
             <>
-              <div className="text-5xl mb-4 animate-spin">⚙️</div>
-              <h2 className="text-xl font-bold text-brand-700 mb-2">Processando…</h2>
+              <div className="w-12 h-12 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-brand-700 mb-2">Processando...</h2>
               <p className="text-gray-500 text-sm mb-4">O sistema retirou seu feedback da fila (dequeue) e está salvando.</p>
             </>
           )}
@@ -156,7 +136,11 @@ export default function Evaluation() {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
         <div className="card">
-          <div className="text-5xl mb-4">✅</div>
+          <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
           <h2 className="text-xl font-bold text-brand-700 mb-2">Avaliação Registrada!</h2>
           <p className="text-gray-500 text-sm mb-6">Obrigado pelo feedback. Sua opinião ajuda a melhorar a merenda escolar.</p>
           <button onClick={reset} className="btn-primary">Fazer Nova Avaliação</button>
@@ -169,13 +153,17 @@ export default function Evaluation() {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
         <div className="card">
-          <div className="text-5xl mb-4">🟡</div>
-          <h2 className="text-xl font-bold text-yellow-700 mb-2">Salvo Offline!</h2>
+          <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-yellow-700 mb-2">Salvo Offline</h2>
           <p className="text-gray-600 text-sm mb-3">
             Sem conexão com a internet. Sua avaliação foi salva localmente e será enviada automaticamente quando a conexão voltar.
           </p>
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6 text-sm text-yellow-700">
-            🟡 {pendingCount} avaliação(ões) aguardando sincronização
+            {pendingCount} avaliação(ões) aguardando sincronização
           </div>
           <button onClick={reset} className="btn-primary">Fazer Nova Avaliação</button>
         </div>
@@ -187,7 +175,11 @@ export default function Evaluation() {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
         <div className="card">
-          <div className="text-5xl mb-4">❌</div>
+          <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
           <h2 className="text-xl font-bold text-red-600 mb-2">Erro ao registrar</h2>
           <p className="text-gray-500 text-sm mb-6">Verifique se o backend está rodando em localhost:3001.</p>
           <button onClick={reset} className="btn-secondary">Tentar novamente</button>
@@ -199,37 +191,33 @@ export default function Evaluation() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-extrabold text-brand-800">⭐ Avaliar Refeição</h1>
+        <h1 className="text-2xl font-extrabold text-brand-800">Avaliar Refeição</h1>
         <p className="text-gray-500 text-sm mt-1">Selecione a refeição de hoje e compartilhe sua opinião.</p>
       </div>
 
-      {/* Mensagem de sync */}
       {syncMsg && (
         <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
           {syncMsg}
         </div>
       )}
 
-      {/* Pendentes offline */}
       {pendingCount > 0 && (
-        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-yellow-700 text-sm flex items-center gap-2">
-          🟡 <span><strong>{pendingCount}</strong> avaliação(ões) salva(s) offline aguardando sincronização</span>
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-yellow-700 text-sm">
+          <strong>{pendingCount}</strong> avaliação(ões) salva(s) offline aguardando sincronização
         </div>
       )}
 
-      {/* Info estrutura de dados */}
       <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
-        <strong>📚 Estrutura: Fila (Queue)</strong> — ao enviar, seu feedback entra na fila (FIFO) e é processado
+        <strong>Estrutura: Fila (Queue)</strong> — ao enviar, seu feedback entra na fila (FIFO) e é processado
         na ordem de chegada. Quando offline, a fila é persistida no LocalStorage.
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
-        {/* Seleção de refeição */}
         <div className="card">
           <h2 className="font-semibold text-gray-700 mb-3">1. Qual refeição você está avaliando?</h2>
           {loading ? (
-            <p className="text-gray-400 text-sm">Carregando refeições…</p>
+            <p className="text-gray-400 text-sm">Carregando refeições...</p>
           ) : (
             <div className="grid sm:grid-cols-2 gap-2">
               {meals.map(meal => (
@@ -251,35 +239,32 @@ export default function Evaluation() {
           )}
         </div>
 
-        {/* Nota */}
         <div className="card">
           <h2 className="font-semibold text-gray-700 mb-3">2. Qual nota você dá?</h2>
           <div className="flex flex-col items-start gap-2">
             <RatingStars value={rating} onChange={setRating} size="lg" />
             {rating > 0 && (
               <p className="text-sm text-gray-500">
-                {['', '😞 Muito ruim', '😕 Ruim', '😐 Regular', '😊 Bom', '😄 Excelente!'][rating]}
+                {['', 'Muito ruim', 'Ruim', 'Regular', 'Bom', 'Excelente'][rating]}
               </p>
             )}
           </div>
         </div>
 
-        {/* Gostou */}
         <div className="card">
           <h2 className="font-semibold text-gray-700 mb-3">3. Você gostou da refeição?</h2>
           <div className="flex gap-3">
             <button type="button" onClick={() => setLiked(true)}
-              className={`flex-1 py-3 rounded-xl font-semibold border-2 transition-all text-lg ${liked === true ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 hover:border-green-300'}`}>
-              👍 Gostei
+              className={`flex-1 py-3 rounded-xl font-semibold border-2 transition-all ${liked === true ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 hover:border-green-300'}`}>
+              Gostei
             </button>
             <button type="button" onClick={() => setLiked(false)}
-              className={`flex-1 py-3 rounded-xl font-semibold border-2 transition-all text-lg ${liked === false ? 'border-red-400 bg-red-50 text-red-600' : 'border-gray-200 hover:border-red-300'}`}>
-              👎 Não gostei
+              className={`flex-1 py-3 rounded-xl font-semibold border-2 transition-all ${liked === false ? 'border-red-400 bg-red-50 text-red-600' : 'border-gray-200 hover:border-red-300'}`}>
+              Não gostei
             </button>
           </div>
         </div>
 
-        {/* Desperdício */}
         <div className="card">
           <h2 className="font-semibold text-gray-700 mb-3">4. Houve desperdício?</h2>
           <label className="flex items-center gap-3 cursor-pointer select-none">
@@ -289,12 +274,14 @@ export default function Evaluation() {
             >
               <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${hadWaste ? 'left-6' : 'left-0.5'}`} />
             </div>
-            <span className="text-sm text-gray-600">{hadWaste ? '♻️ Sim, deixei comida no prato' : '✅ Não, comi tudo'}</span>
+            <span className="text-sm text-gray-600">
+              {hadWaste ? 'Sim, deixei comida no prato' : 'Não, comi tudo'}
+            </span>
           </label>
         </div>
 
         <button type="submit" disabled={!canSubmit} className="btn-primary w-full py-3 text-base">
-          {isOnline() ? '📤 Enviar Avaliação' : '💾 Salvar Offline'}
+          {isOnline() ? 'Enviar Avaliação' : 'Salvar Offline'}
         </button>
       </form>
     </div>
