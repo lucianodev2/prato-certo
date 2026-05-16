@@ -7,6 +7,41 @@ import StatCard from '../components/StatCard'
 import MatrixView from '../components/MatrixView'
 import { statsApi, type Overview, type MealStats, type MatrixCell } from '../services/api'
 
+// Dados reais da pesquisa de campo — Escola Estadual, 13/05/2026 (193 respondentes)
+const PESQUISA = {
+  avaliacao: [
+    { name: 'Muito Boa',  value: 15,  pct: 7.8  },
+    { name: 'Boa',        value: 58,  pct: 30.2 },
+    { name: 'Regular',    value: 103, pct: 53.6 },
+    { name: 'Ruim',       value: 11,  pct: 5.7  },
+    { name: 'Muito Ruim', value: 5,   pct: 2.6  },
+  ],
+  consumo: [
+    { name: 'Todos os Dias', value: 127, pct: 66.1 },
+    { name: 'Às vezes',      value: 45,  pct: 23.4 },
+    { name: 'Raramente',     value: 18,  pct: 9.4  },
+    { name: 'Nunca',         value: 2,   pct: 1.0  },
+  ],
+  desperdicioPrato: [
+    { name: 'Às vezes',       value: 123, pct: 64.4 },
+    { name: 'Nunca',          value: 39,  pct: 20.4 },
+    { name: 'Frequentemente', value: 29,  pct: 15.2 },
+  ],
+  percepcaoDesperdicio: [
+    { name: 'Sim',     value: 157, pct: 81.8 },
+    { name: 'Não sei', value: 23,  pct: 12.0 },
+    { name: 'Não',     value: 12,  pct: 6.2  },
+  ],
+  motivoSobra: [
+    { name: 'Não gostei',       value: 93, pct: 49.5 },
+    { name: 'Peguei demais',    value: 28, pct: 14.9 },
+    { name: 'Não sobra',        value: 22, pct: 11.7 },
+    { name: 'Sem fome',         value: 13, pct: 6.9  },
+    { name: 'Comida fria',      value: 11, pct: 5.8  },
+    { name: 'Outros',           value: 21, pct: 11.2 },
+  ],
+}
+
 export default function Dashboard() {
   const [overview, setOverview] = useState<Overview | null>(null)
   const [mealStats, setMealStats] = useState<MealStats[]>([])
@@ -142,6 +177,119 @@ export default function Dashboard() {
           <MatrixView matrix={matrix} />
         </div>
       )}
+
+      {/* ── PESQUISA DE CAMPO ── */}
+      <div className="border-t-2 border-brand-100 pt-6">
+        <div className="flex items-center gap-3 mb-1">
+          <span className="text-2xl">📋</span>
+          <div>
+            <h2 className="text-xl font-extrabold text-brand-800">Pesquisa de Campo</h2>
+            <p className="text-xs text-gray-400">Escola Estadual · 193 alunos · 13/05/2026</p>
+          </div>
+        </div>
+        <p className="text-sm text-gray-500 mb-6">Dados coletados diretamente com estudantes via questionário presencial.</p>
+
+        {/* Cards resumo */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <StatCard label="Respondentes"    value={193}    icon="👥" color="green" sub="alunos entrevistados" />
+          <StatCard label="Comem Diariamente" value="66,1%" icon="🍽️" color="blue"  sub="todos os dias" />
+          <StatCard label="Percebem Desperdício" value="81,8%" icon="♻️" color="orange" sub="dizem que há desperdício" />
+          <StatCard label="Deram Sugestão"  value={156}    icon="💬" color="green" sub="de 193 respondentes" />
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-6 mb-6">
+
+          {/* Q1 — Avaliação da refeição */}
+          <div className="card">
+            <h3 className="font-bold text-gray-700 mb-1">Como você avalia a refeição?</h3>
+            <p className="text-xs text-gray-400 mb-4">192 respostas</p>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={PESQUISA.avaliacao} layout="vertical" margin={{ left: 10, right: 30 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis type="number" tick={{ fontSize: 11 }} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={80} />
+                <Tooltip formatter={(v: any, _: any, p: any) => [`${v} alunos (${p.payload.pct}%)`, '']} />
+                <Bar dataKey="value" radius={[0, 6, 6, 0]}>
+                  {PESQUISA.avaliacao.map((_, i) => (
+                    <Cell key={i} fill={['#22c55e','#86efac','#fbbf24','#f97316','#ef4444'][i]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Q2 — Frequência de consumo */}
+          <div className="card">
+            <h3 className="font-bold text-gray-700 mb-1">Você costuma comer a refeição?</h3>
+            <p className="text-xs text-gray-400 mb-4">192 respostas</p>
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie data={PESQUISA.consumo} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, pct }) => `${pct}%`} labelLine={false}>
+                  {PESQUISA.consumo.map((_, i) => (
+                    <Cell key={i} fill={['#22c55e','#86efac','#fbbf24','#f97316'][i]} />
+                  ))}
+                </Pie>
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <Tooltip formatter={(v: any, _: any, p: any) => [`${v} alunos (${p.payload.pct}%)`, p.payload.name]} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Q3 — Desperdício no prato */}
+          <div className="card">
+            <h3 className="font-bold text-gray-700 mb-1">Você costuma deixar comida no prato?</h3>
+            <p className="text-xs text-gray-400 mb-4">191 respostas</p>
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie data={PESQUISA.desperdicioPrato} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value">
+                  {PESQUISA.desperdicioPrato.map((_, i) => (
+                    <Cell key={i} fill={['#fbbf24','#22c55e','#ef4444'][i]} />
+                  ))}
+                </Pie>
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <Tooltip formatter={(v: any, _: any, p: any) => [`${v} alunos (${p.payload.pct}%)`, p.payload.name]} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Q4 — Percepção de desperdício */}
+          <div className="card">
+            <h3 className="font-bold text-gray-700 mb-1">Existe desperdício de refeição escolar?</h3>
+            <p className="text-xs text-gray-400 mb-4">192 respostas</p>
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie data={PESQUISA.percepcaoDesperdicio} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value" label={({ pct }) => `${pct}%`} labelLine={false}>
+                  {PESQUISA.percepcaoDesperdicio.map((_, i) => (
+                    <Cell key={i} fill={['#ef4444','#fbbf24','#22c55e'][i]} />
+                  ))}
+                </Pie>
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <Tooltip formatter={(v: any, _: any, p: any) => [`${v} alunos (${p.payload.pct}%)`, p.payload.name]} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Q5 — Motivo da sobra */}
+        <div className="card">
+          <h3 className="font-bold text-gray-700 mb-1">Qual o principal motivo para sobrar comida?</h3>
+          <p className="text-xs text-gray-400 mb-4">188 respostas</p>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={PESQUISA.motivoSobra} margin={{ top: 0, right: 20, left: -10, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0fdf4" />
+              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} />
+              <Tooltip formatter={(v: any, _: any, p: any) => [`${v} alunos (${p.payload.pct}%)`, '']} />
+              <Bar dataKey="value" fill="#f97316" radius={[6, 6, 0, 0]}>
+                {PESQUISA.motivoSobra.map((_, i) => (
+                  <Cell key={i} fill={['#ef4444','#f97316','#22c55e','#fbbf24','#3b82f6','#a855f7'][i]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
     </div>
   )
 }
