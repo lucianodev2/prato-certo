@@ -7,7 +7,7 @@ import StatCard from '../components/StatCard'
 import MatrixView from '../components/MatrixView'
 import { statsApi, type Overview, type MealStats, type MatrixCell } from '../services/api'
 
-// Dados reais da pesquisa de campo — Escola Estadual, 13/05/2026 (193 respondentes)
+// Dados reais da pesquisa de campo — IEMA Rio Anil, 13/05/2026 (193 respondentes)
 const PESQUISA = {
   avaliacao: [
     { name: 'Muito Boa',  value: 15,  pct: 7.8  },
@@ -86,11 +86,6 @@ export default function Dashboard() {
         <p className="text-gray-500 text-sm mt-1">Estatísticas de aceitação da merenda escolar.</p>
       </div>
 
-      {/* Info vetores */}
-      <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
-        <strong>Estrutura: Vetores (Arrays)</strong> — todas as estatísticas são calculadas iterando sobre vetores de avaliações.        A busca, inserção e média utilizam operações sobre esses vetores.
-      </div>
-
       {/* Overview */}
       {overview && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -146,9 +141,6 @@ export default function Dashboard() {
       {mealStats.length > 0 && (
         <div className="card">
           <h2 className="font-bold text-gray-700 mb-4">Ranking das Refeições</h2>
-          <p className="text-xs text-gray-500 mb-3">
-            <span className="font-semibold text-brand-700">Vetor ordenado</span> — as refeições são armazenadas em um vetor e ordenadas pela nota média (decrescente).
-          </p>
           <div className="space-y-2">
             {mealStats.map((m, i) => (
               <div key={m.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
@@ -181,7 +173,7 @@ export default function Dashboard() {
       <div className="border-t-2 border-brand-100 pt-6">
         <div className="mb-1">
           <h2 className="text-xl font-extrabold text-brand-800">Pesquisa de Campo</h2>
-          <p className="text-xs text-gray-400">Escola Estadual · 193 alunos · 13/05/2026</p>
+          <p className="text-xs text-gray-400">IEMA Rio Anil · 193 alunos · 13/05/2026</p>
         </div>
         <p className="text-sm text-gray-500 mb-6">Dados coletados diretamente com estudantes via questionário presencial.</p>
 

@@ -82,10 +82,10 @@ export default function Home() {
       {/* Feature cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { to: '/avaliar',   title: 'Avaliação',   desc: 'Feedbacks em Fila (Queue) com suporte offline e sincronização automática.' },
+          { to: '/avaliar',   title: 'Avaliação',   desc: 'Registre o feedback dos alunos com suporte offline e sincronização automática.' },
           { to: '/analise',   title: 'Análise IA',  desc: 'Motor inteligente que gera insights, alertas e sugestões do cardápio.' },
-          { to: '/dashboard', title: 'Dashboard',   desc: 'Gráficos e Matriz de notas por semana/dia com estatísticas visuais.' },
-          { to: '/cardapio',  title: 'Cardápio',    desc: 'Gestão de refeições com histórico de Pilha (Stack) para desfazer ações.' },
+          { to: '/dashboard', title: 'Dashboard',   desc: 'Gráficos e matriz de notas por semana e dia com estatísticas visuais.' },
+          { to: '/cardapio',  title: 'Cardápio',    desc: 'Cadastre e gerencie as refeições servidas na escola.' },
         ].map(card => (
           <Link key={card.to} to={card.to} className="card hover:border-brand-300 hover:shadow-md transition-all group">
             <h3 className="font-bold text-brand-800 text-base mb-1 group-hover:text-brand-600">{card.title}</h3>

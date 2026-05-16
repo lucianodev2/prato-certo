@@ -65,19 +65,12 @@ async function initDatabase() {
 
   const { count } = row(db, 'SELECT COUNT(*) as count FROM meals') ?? { count: 0 };
   if (!count) {
-    for (const [name, category, description] of [
-      ['Arroz com Feijão',  'Proteínas',    'Prato base nutritivo com arroz branco e feijão carioca'],
-      ['Fruta do Dia',      'Frutas',       'Fruta fresca sazonal selecionada diariamente'],
-      ['Salada Verde',      'Verduras',     'Mix de alface, tomate e cenoura com azeite'],
-      ['Macarrão ao Molho', 'Carboidratos', 'Macarrão com molho de tomate caseiro'],
-      ['Frango Grelhado',   'Proteínas',    'Peito de frango grelhado com temperos naturais'],
-    ]) {
-      run(db, 'INSERT INTO meals (name, category, description) VALUES (?, ?, ?)', [name, category, description]);
-    }
-    console.log('Refeições inseridas.');
+    run(db, 'INSERT INTO meals (name, category, description) VALUES (?, ?, ?)',
+      ['Merenda Escolar', 'Geral', 'Refeição servida no refeitório do IEMA Rio Anil']);
+    console.log('Refeição base inserida.');
   }
 
-  // Seed com dados reais da pesquisa de campo (193 alunos, 13/05/2026)
+  // Seed com dados reais da pesquisa de campo (193 alunos, IEMA Rio Anil, 13/05/2026)
   const { evalCount } = row(db, 'SELECT COUNT(*) as evalCount FROM evaluations') ?? { evalCount: 0 };
   if (!evalCount) {
     // Q1: Avaliação da refeição → ratings
@@ -94,16 +87,16 @@ async function initDatabase() {
     const waste = [...Array(152).fill(1), ...Array(41).fill(0)];
 
     for (let i = 0; i < 193; i++) {
-      const rating     = ratings[i];
-      const liked      = rating >= 4 ? 1 : 0;
-      const had_waste  = waste[i];
-      const meal_id    = (i % 5) + 1;
-      const day_of_week = (i % 5) + 1;           // 1=Seg a 5=Sex
+      const rating      = ratings[i];
+      const liked       = rating >= 4 ? 1 : 0;
+      const had_waste   = waste[i];
+      const meal_id     = 1;                              // avaliação da merenda em geral
+      const day_of_week = (i % 5) + 1;                   // 1=Seg a 5=Sex
       const week_number = Math.min(Math.floor(i / 39) + 1, 5);
       run(db, 'INSERT INTO evaluations (meal_id, rating, liked, had_waste, day_of_week, week_number) VALUES (?, ?, ?, ?, ?, ?)',
         [meal_id, rating, liked, had_waste, day_of_week, week_number]);
     }
-    console.log('193 avaliações reais inseridas (pesquisa de campo 13/05/2026).');
+    console.log('193 avaliações reais inseridas (pesquisa de campo IEMA Rio Anil, 13/05/2026).');
   }
 
   persist();

@@ -117,13 +117,13 @@ export default function Evaluation() {
             <>
               <div className="w-12 h-12 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin mx-auto mb-4" />
               <h2 className="text-xl font-bold text-brand-700 mb-2">Adicionando à Fila...</h2>
-              <p className="text-gray-500 text-sm mb-4">Seu feedback foi colocado na fila de processamento (enqueue).</p>
+              <p className="text-gray-500 text-sm mb-4">Seu feedback está sendo processado.</p>
             </>
           ) : (
             <>
               <div className="w-12 h-12 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin mx-auto mb-4" />
               <h2 className="text-xl font-bold text-brand-700 mb-2">Processando...</h2>
-              <p className="text-gray-500 text-sm mb-4">O sistema retirou seu feedback da fila (dequeue) e está salvando.</p>
+              <p className="text-gray-500 text-sm mb-4">Salvando sua avaliação...</p>
             </>
           )}
           <QueueVisual items={queueItems} />
@@ -206,11 +206,6 @@ export default function Evaluation() {
           <strong>{pendingCount}</strong> avaliação(ões) salva(s) offline aguardando sincronização
         </div>
       )}
-
-      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
-        <strong>Estrutura: Fila (Queue)</strong> — ao enviar, seu feedback entra na fila (FIFO) e é processado
-        na ordem de chegada. Quando offline, a fila é persistida no LocalStorage.
-      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
