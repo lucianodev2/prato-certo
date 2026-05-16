@@ -90,9 +90,9 @@ async function initDatabase() {
       const rating      = ratings[i];
       const liked       = rating >= 4 ? 1 : 0;
       const had_waste   = waste[i];
-      const meal_id     = 1;                              // avaliação da merenda em geral
-      const day_of_week = (i % 5) + 1;                   // 1=Seg a 5=Sex
-      const week_number = Math.min(Math.floor(i / 39) + 1, 5);
+      const meal_id     = 1;   // avaliação da merenda em geral
+      const day_of_week = 3;   // quarta-feira (13/05/2026)
+      const week_number = 1;   // coleta em único dia
       run(db, 'INSERT INTO evaluations (meal_id, rating, liked, had_waste, day_of_week, week_number) VALUES (?, ?, ?, ?, ?, ?)',
         [meal_id, rating, liked, had_waste, day_of_week, week_number]);
     }

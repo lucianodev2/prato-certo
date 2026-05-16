@@ -4,8 +4,7 @@ import {
   PieChart, Pie, Cell, Legend,
 } from 'recharts'
 import StatCard from '../components/StatCard'
-import MatrixView from '../components/MatrixView'
-import { statsApi, type Overview, type MealStats, type MatrixCell } from '../services/api'
+import { statsApi, type Overview, type MealStats } from '../services/api'
 
 // Dados reais da pesquisa de campo — IEMA Rio Anil, 13/05/2026 (193 respondentes)
 const PESQUISA = {
@@ -45,15 +44,13 @@ const PESQUISA = {
 export default function Dashboard() {
   const [overview, setOverview] = useState<Overview | null>(null)
   const [mealStats, setMealStats] = useState<MealStats[]>([])
-  const [matrix, setMatrix]       = useState<MatrixCell[][]>([])
   const [loading, setLoading]     = useState(true)
 
   useEffect(() => {
-    Promise.all([statsApi.getOverview(), statsApi.getMealsStats(), statsApi.getMatrix()])
-      .then(([ov, ms, mx]) => {
+    Promise.all([statsApi.getOverview(), statsApi.getMealsStats()])
+      .then(([ov, ms]) => {
         setOverview(ov.data)
         setMealStats(ms.data.stats)
-        setMatrix(mx.data.matrix)
       })
       .catch(console.error)
       .finally(() => setLoading(false))
@@ -158,14 +155,6 @@ export default function Dashboard() {
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Matrix */}
-      {matrix.length > 0 && (
-        <div className="card">
-          <h2 className="font-bold text-gray-700 mb-2">Matriz de Notas — Semana × Dia</h2>
-          <MatrixView matrix={matrix} />
         </div>
       )}
 
